@@ -1,0 +1,1338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard - DigSkills CBT Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4cc9f0;
+            --warning: #f9c74f;
+            --danger: #f94144;
+            --gray: #6c757d;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background: linear-gradient(to bottom, var(--primary), var(--secondary));
+            color: white;
+            padding: 1.5rem 1rem;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+        }
+        
+        .profile {
+            text-align: center;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 1.5rem;
+        }
+        
+        .profile-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid white;
+            margin-bottom: 1rem;
+        }
+        
+        .profile h3 {
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+        
+        .profile p {
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+        
+        .nav-menu {
+            list-style: none;
+        }
+        
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+        
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1rem;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav-link i {
+            margin-right: 0.8rem;
+            font-size: 1.2rem;
+        }
+        
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 2rem;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .header h1 {
+            color: var(--primary);
+            font-size: 1.8rem;
+        }
+        
+        .logout-btn {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .logout-btn:hover {
+            background: #d32f2f;
+            transform: translateY(-2px);
+        }
+        
+        .logout-btn i {
+            margin-right: 0.5rem;
+        }
+        
+        .dashboard-section {
+            display: none;
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+        
+        .dashboard-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .section-title {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        /* Filter Styles */
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        .form-group select, .form-group input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+        
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+        
+        /* Table Styles */
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+        }
+        
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        /* Grading Styles */
+        .grading-container {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .student-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .info-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .info-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-bottom: 0.3rem;
+        }
+        
+        .info-value {
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .theory-questions {
+            margin-top: 1.5rem;
+        }
+        
+        .theory-question {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .question-text {
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .student-answer {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .grading-input {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .grading-input input {
+            width: 80px;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .max-score {
+            color: var(--gray);
+        }
+        
+        /* Stats Cards */
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+        
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        /* Notification Styles */
+        .notification {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+        
+        .notification.error {
+            background-color: #ffebee;
+            color: #c62828;
+            border: 1px solid #ef9a9a;
+        }
+        
+        .notification.success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #a5d6a7;
+        }
+        
+        /* Loading Spinner */
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 2rem 0;
+        }
+        
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 200px;
+            }
+            
+            .main-content {
+                margin-left: 200px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 1rem;
+            }
+            
+            .profile {
+                display: flex;
+                align-items: center;
+                text-align: left;
+            }
+            
+            .profile-img {
+                width: 60px;
+                height: 60px;
+                margin-right: 1rem;
+                margin-bottom: 0;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 1.5rem;
+            }
+            
+            .filters {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="profile">
+                <img src="https://ui-avatars.com/api/?name=Teacher+Name&background=4361ee&color=fff" alt="Profile" class="profile-img" id="profileImage">
+                <h3 id="teacherName">Teacher Name</h3>
+                <p id="teacherSubject">Subject: Mathematics</p>
+            </div>
+            
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link active" data-section="overview">
+                        <i class="fas fa-tachometer-alt"></i> Overview
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-section="grading">
+                        <i class="fas fa-check-circle"></i> Grade Papers
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-section="results">
+                        <i class="fas fa-chart-line"></i> View Results
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-section="classes">
+                        <i class="fas fa-users"></i> My Classes
+                    </a>
+                </li>
+            </ul>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h1>Teacher Dashboard</h1>
+                <button class="logout-btn" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+            
+            <div id="notification" class="notification"></div>
+            
+            <!-- Overview Section -->
+            <div class="dashboard-section active" id="overview">
+                <h2 class="section-title">Overview</h2>
+                
+                <div class="stats-cards">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
+                        <div class="stat-value" id="totalExams">0</div>
+                        <div class="stat-label">Exams to Grade</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-value" id="totalStudents">0</div>
+                        <div class="stat-label">Students</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-chalkboard"></i>
+                        </div>
+                        <div class="stat-value" id="totalClasses">0</div>
+                        <div class="stat-label">Classes</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-check-double"></i>
+                        </div>
+                        <div class="stat-value" id="gradedExams">0</div>
+                        <div class="stat-label">Graded Exams</div>
+                    </div>
+                </div>
+                
+                <h3 class="section-title">Recent Exams to Grade</h3>
+                
+                <div class="table-container">
+                    <table id="recentExamsTable">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Class</th>
+                                <th>Exam</th>
+                                <th>Subject</th>
+                                <th>Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="6" style="text-align: center;">No exams to grade at the moment</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Grading Section -->
+            <div class="dashboard-section" id="grading">
+                <h2 class="section-title">Grade Exam Papers</h2>
+                
+                <div class="filters">
+                    <div class="form-group">
+                        <label for="gradeClassFilter">Class</label>
+                        <select id="gradeClassFilter">
+                            <option value="">All Classes</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="gradeSubjectFilter">Subject</label>
+                        <select id="gradeSubjectFilter">
+                            <option value="">All Subjects</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="gradeExamFilter">Exam Type</label>
+                        <select id="gradeExamFilter">
+                            <option value="">All Exams</option>
+                            <option value="CA">Continuous Assessment</option>
+                            <option value="Midterm">Midterm Exam</option>
+                            <option value="Final">Final Exam</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>&nbsp;</label>
+                        <button class="btn btn-primary" id="loadUngraded">Load Ungraded Exams</button>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <table id="ungradedExamsTable">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Class</th>
+                                <th>Exam</th>
+                                <th>Subject</th>
+                                <th>Date</th>
+                                <th>Objective Score</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="7" style="text-align: center;">No ungraded exams found</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="grading-container" id="gradingInterface" style="display: none;">
+                    <h3 class="section-title">Grade Theory Questions</h3>
+                    
+                    <div class="student-info">
+                        <div class="info-item">
+                            <div class="info-label">Student</div>
+                            <div class="info-value" id="gradeStudentName">-</div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-label">Class</div>
+                            <div class="info-value" id="gradeStudentClass">-</div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-label">Exam</div>
+                            <div class="info-value" id="gradeExamName">-</div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-label">Objective Score</div>
+                            <div class="info-value" id="gradeObjectiveScore">-</div>
+                        </div>
+                    </div>
+                    
+                    <div class="theory-questions" id="theoryQuestionsContainer">
+                        <!-- Theory questions will be loaded here -->
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="teacherComments">Teacher Comments</label>
+                        <textarea id="teacherComments" rows="3" style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 8px;"></textarea>
+                    </div>
+                    
+                    <button class="btn btn-primary" id="submitGrading">Submit Grading</button>
+                </div>
+            </div>
+            
+            <!-- Results Section -->
+            <div class="dashboard-section" id="results">
+                <h2 class="section-title">View Student Results</h2>
+                
+                <div class="filters">
+                    <div class="form-group">
+                        <label for="resultClassFilter">Class</label>
+                        <select id="resultClassFilter">
+                            <option value="">All Classes</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="resultSubjectFilter">Subject</label>
+                        <select id="resultSubjectFilter">
+                            <option value="">All Subjects</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="resultExamFilter">Exam Type</label>
+                        <select id="resultExamFilter">
+                            <option value="">All Exams</option>
+                            <option value="CA">Continuous Assessment</option>
+                            <option value="Midterm">Midterm Exam</option>
+                            <option value="Final">Final Exam</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>&nbsp;</label>
+                        <button class="btn btn-primary" id="loadResults">Load Results</button>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <table id="resultsTable">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Class</th>
+                                <th>Exam</th>
+                                <th>Subject</th>
+                                <th>Date</th>
+                                <th>Objective</th>
+                                <th>Theory</th>
+                                <th>Total</th>
+                                <th>Percentage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="9" style="text-align: center;">No results found</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Classes Section -->
+            <div class="dashboard-section" id="classes">
+                <h2 class="section-title">My Classes & Subjects</h2>
+                
+                <div class="stats-cards">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </div>
+                        <div class="stat-value" id="assignedClasses">0</div>
+                        <div class="stat-label">Assigned Classes</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="stat-value" id="assignedSubjects">0</div>
+                        <div class="stat-label">Assigned Subjects</div>
+                    </div>
+                </div>
+                
+                <h3 class="section-title">Class Assignments</h3>
+                
+                <div class="table-container">
+                    <table id="classesTable">
+                        <thead>
+                            <tr>
+                                <th>Class</th>
+                                <th>Subjects</th>
+                                <th>Number of Students</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="3" style="text-align: center;">No class assignments found</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="loading" id="loading">
+                <div class="loading-spinner"></div>
+                <p>Processing...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        // Firebase configuration - replace with your actual config
+        const firebaseConfig = {
+    apiKey: "AIzaSyDxb0pmdZU70K0ITfYbam5_xKTntAaJZGI",
+    authDomain: "digskills-cbt-portal.firebaseapp.com",
+    databaseURL: "https://digskills-cbt-portal-default-rtdb.firebaseio.com",
+    projectId: "digskills-cbt-portal",
+    storageBucket: "digskills-cbt-portal.firebasestorage.app",
+    messagingSenderId: "349802927107",
+    appId: "1:349802927107:web:3207acfc60d9d51c026a36",
+    measurementId: "G-Q3QLTFB75E"
+  };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        
+        // DOM Elements
+        const navLinks = document.querySelectorAll('.nav-link');
+        const sections = document.querySelectorAll('.dashboard-section');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const notification = document.getElementById('notification');
+        const loading = document.getElementById('loading');
+        
+        // User Data
+        let currentUser = null;
+        let userData = null;
+        let assignedClasses = [];
+        let assignedSubjects = [];
+        
+        // Initialize the dashboard
+        function initDashboard() {
+            // Check if user is logged in
+            auth.onAuthStateChanged(async (user) => {
+                if (user) {
+                    currentUser = user;
+                    await loadUserData();
+                    setupEventListeners();
+                    updateUI();
+                    loadOverviewStats();
+                    loadClassFilters();
+                } else {
+                    // Redirect to login if not authenticated
+                    window.location.href = 'index.html';
+                }
+            });
+        }
+        
+        // Load user data from Firestore
+        async function loadUserData() {
+            try {
+                loading.style.display = 'block';
+                const userDoc = await db.collection('teachers').doc(currentUser.uid).get();
+                
+                if (userDoc.exists) {
+                    userData = userDoc.data();
+                    
+                    // Extract assigned classes and subjects
+                    if (userData.assignedClasses) {
+                        assignedClasses = userData.assignedClasses;
+                    }
+                    
+                    if (userData.assignedSubjects) {
+                        assignedSubjects = userData.assignedSubjects;
+                    }
+                } else {
+                    showNotification('Teacher data not found', 'error');
+                }
+            } catch (error) {
+                console.error('Error loading user data:', error);
+                showNotification('Error loading teacher data', 'error');
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+        
+        // Set up event listeners
+        function setupEventListeners() {
+            // Navigation
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const sectionId = link.getAttribute('data-section');
+                    
+                    // Update active nav link
+                    navLinks.forEach(nav => nav.classList.remove('active'));
+                    link.classList.add('active');
+                    
+                    // Show selected section
+                    sections.forEach(section => section.classList.remove('active'));
+                    document.getElementById(sectionId).classList.add('active');
+                    
+                    // Load section-specific data
+                    if (sectionId === 'grading') {
+                        loadUngradedExams();
+                    } else if (sectionId === 'results') {
+                        loadResults();
+                    } else if (sectionId === 'classes') {
+                        loadClassAssignments();
+                    }
+                });
+            });
+            
+            // Logout
+            logoutBtn.addEventListener('click', () => {
+                auth.signOut().then(() => {
+                    window.location.href = 'index.html';
+                });
+            });
+            
+            // Grading Section
+            document.getElementById('loadUngraded').addEventListener('click', loadUngradedExams);
+            document.getElementById('submitGrading').addEventListener('click', submitGrading);
+            
+            // Results Section
+            document.getElementById('loadResults').addEventListener('click', loadResults);
+        }
+        
+        // Update UI with user data
+        function updateUI() {
+            if (userData) {
+                // Update profile
+                document.getElementById('teacherName').textContent = userData.name || 'Teacher Name';
+                document.getElementById('teacherSubject').textContent = `Subjects: ${assignedSubjects.join(', ') || 'Not specified'}`;
+                
+                // Update stats cards
+                document.getElementById('assignedClasses').textContent = assignedClasses.length;
+                document.getElementById('assignedSubjects').textContent = assignedSubjects.length;
+            }
+        }
+        
+        // Show notification
+        function showNotification(message, type) {
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.style.display = 'block';
+            
+            // Hide after 5 seconds
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 5000);
+        }
+        
+        // Load class filters
+        function loadClassFilters() {
+            const gradeClassFilter = document.getElementById('gradeClassFilter');
+            const resultClassFilter = document.getElementById('resultClassFilter');
+            
+            // Clear existing options except the first one
+            while (gradeClassFilter.options.length > 1) {
+                gradeClassFilter.remove(1);
+            }
+            
+            while (resultClassFilter.options.length > 1) {
+                resultClassFilter.remove(1);
+            }
+            
+            // Add assigned classes to filters
+            assignedClasses.forEach(className => {
+                const option1 = document.createElement('option');
+                option1.value = className;
+                option1.textContent = className;
+                gradeClassFilter.appendChild(option1);
+                
+                const option2 = document.createElement('option');
+                option2.value = className;
+                option2.textContent = className;
+                resultClassFilter.appendChild(option2);
+            });
+            
+            // Load subject filters
+            const gradeSubjectFilter = document.getElementById('gradeSubjectFilter');
+            const resultSubjectFilter = document.getElementById('resultSubjectFilter');
+            
+            // Clear existing options except the first one
+            while (gradeSubjectFilter.options.length > 1) {
+                gradeSubjectFilter.remove(1);
+            }
+            
+            while (resultSubjectFilter.options.length > 1) {
+                resultSubjectFilter.remove(1);
+            }
+            
+            // Add assigned subjects to filters
+            assignedSubjects.forEach(subject => {
+                const option1 = document.createElement('option');
+                option1.value = subject;
+                option1.textContent = subject;
+                gradeSubjectFilter.appendChild(option1);
+                
+                const option2 = document.createElement('option');
+                option2.value = subject;
+                option2.textContent = subject;
+                resultSubjectFilter.appendChild(option2);
+            });
+        }
+        
+        // Load overview statistics
+        async function loadOverviewStats() {
+            try {
+                // Count exams to grade
+                const ungradedQuery = db.collection('examResults')
+                    .where('theoryScore', '==', null)
+                    .where('subject', 'in', assignedSubjects);
+                
+                const ungradedSnapshot = await ungradedQuery.get();
+                document.getElementById('totalExams').textContent = ungradedSnapshot.size;
+                
+                // Count graded exams
+                const gradedQuery = db.collection('examResults')
+                    .where('theoryScore', '!=', null)
+                    .where('subject', 'in', assignedSubjects);
+                
+                const gradedSnapshot = await gradedQuery.get();
+                document.getElementById('gradedExams').textContent = gradedSnapshot.size;
+                
+                // Count students in assigned classes
+                const studentsQuery = db.collection('users')
+                    .where('role', '==', 'student')
+                    .where('class', 'in', assignedClasses);
+                
+                const studentsSnapshot = await studentsQuery.get();
+                document.getElementById('totalStudents').textContent = studentsSnapshot.size;
+                
+                // Count classes
+                document.getElementById('totalClasses').textContent = assignedClasses.length;
+                
+                // Load recent exams to grade
+                loadRecentExams(ungradedSnapshot);
+            } catch (error) {
+                console.error('Error loading overview stats:', error);
+            }
+        }
+        
+        // Load recent exams to grade
+        function loadRecentExams(ungradedSnapshot) {
+            const recentExamsTable = document.getElementById('recentExamsTable');
+            const tbody = recentExamsTable.querySelector('tbody');
+            tbody.innerHTML = '';
+            
+            if (ungradedSnapshot.empty) {
+                const row = document.createElement('tr');
+                row.innerHTML = '<td colspan="6" style="text-align: center;">No exams to grade at the moment</td>';
+                tbody.appendChild(row);
+                return;
+            }
+            
+            // Show only 5 most recent exams
+            let count = 0;
+            ungradedSnapshot.forEach(doc => {
+                if (count >= 5) return;
+                
+                const exam = doc.data();
+                const row = document.createElement('tr');
+                
+                row.innerHTML = `
+                    <td>${exam.studentName}</td>
+                    <td>${exam.className}</td>
+                    <td>${exam.examType}</td>
+                    <td>${exam.subject}</td>
+                    <td>${new Date(exam.timestamp?.toDate()).toLocaleDateString()}</td>
+                    <td>
+                        <button class="btn btn-primary btn-sm" data-id="${doc.id}">Grade Now</button>
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+                count++;
+                
+                // Add event listener to grade button
+                row.querySelector('button').addEventListener('click', () => {
+                    // Switch to grading section
+                    document.querySelector('[data-section="grading"]').click();
+                    // Load exam for grading
+                    loadExamForGrading(doc.id, exam);
+                });
+            });
+        }
+        
+        // Load ungraded exams
+        async function loadUngradedExams() {
+            try {
+                loading.style.display = 'block';
+                
+                const classFilter = document.getElementById('gradeClassFilter').value;
+                const subjectFilter = document.getElementById('gradeSubjectFilter').value;
+                const examFilter = document.getElementById('gradeExamFilter').value;
+                
+                let query = db.collection('examResults')
+                    .where('theoryScore', '==', null)
+                    .where('subject', 'in', assignedSubjects);
+                
+                // Apply filters
+                if (classFilter) {
+                    query = query.where('className', '==', classFilter);
+                }
+                
+                if (subjectFilter) {
+                    query = query.where('subject', '==', subjectFilter);
+                }
+                
+                if (examFilter) {
+                    query = query.where('examType', '==', examFilter);
+                }
+                
+                const snapshot = await query.get();
+                const ungradedExamsTable = document.getElementById('ungradedExamsTable');
+                const tbody = ungradedExamsTable.querySelector('tbody');
+                tbody.innerHTML = '';
+                
+                if (snapshot.empty) {
+                    const row = document.createElement('tr');
+                    row.innerHTML = '<td colspan="7" style="text-align: center;">No ungraded exams found</td>';
+                    tbody.appendChild(row);
+                    return;
+                }
+                
+                snapshot.forEach(doc => {
+                    const exam = doc.data();
+                    const row = document.createElement('tr');
+                    
+                    row.innerHTML = `
+                        <td>${exam.studentName}</td>
+                        <td>${exam.className}</td>
+                        <td>${exam.examType}</td>
+                        <td>${exam.subject}</td>
+                        <td>${new Date(exam.timestamp?.toDate()).toLocaleDateString()}</td>
+                        <td>${exam.objectiveScore || 0}%</td>
+                        <td>
+                            <button class="btn btn-primary btn-sm" data-id="${doc.id}">Grade</button>
+                        </td>
+                    `;
+                    
+                    tbody.appendChild(row);
+                    
+                    // Add event listener to grade button
+                    row.querySelector('button').addEventListener('click', () => {
+                        loadExamForGrading(doc.id, exam);
+                    });
+                });
+            } catch (error) {
+                console.error('Error loading ungraded exams:', error);
+                showNotification('Error loading ungraded exams', 'error');
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+        
+        // Load exam for grading
+        function loadExamForGrading(examId, examData) {
+            // Show student info
+            document.getElementById('gradeStudentName').textContent = examData.studentName;
+            document.getElementById('gradeStudentClass').textContent = examData.className;
+            document.getElementById('gradeExamName').textContent = examData.examType;
+            document.getElementById('gradeObjectiveScore').textContent = `${examData.objectiveScore || 0}%`;
+            
+            // Load theory questions
+            const theoryQuestionsContainer = document.getElementById('theoryQuestionsContainer');
+            theoryQuestionsContainer.innerHTML = '';
+            
+            if (examData.theoryQuestions && examData.theoryQuestions.length > 0) {
+                examData.theoryQuestions.forEach((question, index) => {
+                    const questionDiv = document.createElement('div');
+                    questionDiv.className = 'theory-question';
+                    
+                    questionDiv.innerHTML = `
+                        <div class="question-text">${index + 1}. ${question.question}</div>
+                        <div class="student-answer">
+                            <strong>Student's Answer:</strong><br>
+                            ${question.studentAnswer || 'No answer provided'}
+                        </div>
+                        <div class="grading-input">
+                            <label>Score: </label>
+                            <input type="number" min="0" max="${question.maxScore}" value="${question.score || 0}" 
+                                data-question-index="${index}" class="theory-score">
+                            <span class="max-score">/ ${question.maxScore}</span>
+                        </div>
+                    `;
+                    
+                    theoryQuestionsContainer.appendChild(questionDiv);
+                });
+            } else {
+                theoryQuestionsContainer.innerHTML = '<p>No theory questions in this exam.</p>';
+            }
+            
+            // Show grading interface
+            document.getElementById('gradingInterface').style.display = 'block';
+            
+            // Store current exam ID
+            document.getElementById('submitGrading').dataset.examId = examId;
+            
+            // Scroll to grading interface
+            document.getElementById('gradingInterface').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Submit grading
+        async function submitGrading() {
+            try {
+                loading.style.display = 'block';
+                
+                const examId = document.getElementById('submitGrading').dataset.examId;
+                const theoryScores = document.querySelectorAll('.theory-score');
+                const teacherComments = document.getElementById('teacherComments').value;
+                
+                // Calculate theory score
+                let totalTheoryScore = 0;
+                let maxTheoryScore = 0;
+                const theoryScoreDetails = [];
+                
+                theoryScores.forEach(input => {
+                    const score = parseInt(input.value) || 0;
+                    const maxScore = parseInt(input.nextElementSibling.textContent.replace('/', ''));
+                    const questionIndex = parseInt(input.dataset.questionIndex);
+                    
+                    totalTheoryScore += score;
+                    maxTheoryScore += maxScore;
+                    
+                    theoryScoreDetails.push({
+                        questionIndex: questionIndex,
+                        score: score,
+                        maxScore: maxScore
+                    });
+                });
+                
+                const theoryPercentage = maxTheoryScore > 0 ? Math.round((totalTheoryScore / maxTheoryScore) * 100) : 0;
+                
+                // Update exam result in Firestore
+                await db.collection('examResults').doc(examId).update({
+                    theoryScore: theoryPercentage,
+                    theoryScoreDetails: theoryScoreDetails,
+                    teacherComments: teacherComments,
+                    gradedBy: currentUser.uid,
+                    gradedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                showNotification('Exam graded successfully!', 'success');
+                
+                // Hide grading interface
+                document.getElementById('gradingInterface').style.display = 'none';
+                
+                // Reload ungraded exams
+                loadUngradedExams();
+                
+                // Update overview stats
+                loadOverviewStats();
+            } catch (error) {
+                console.error('Error submitting grading:', error);
+                showNotification('Error submitting grading', 'error');
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+        
+        // Load results
+        async function loadResults() {
+            try {
+                loading.style.display = 'block';
+                
+                const classFilter = document.getElementById('resultClassFilter').value;
+                const subjectFilter = document.getElementById('resultSubjectFilter').value;
+                const examFilter = document.getElementById('resultExamFilter').value;
+                
+                let query = db.collection('examResults')
+                    .where('theoryScore', '!=', null)
+                    .where('subject', 'in', assignedSubjects);
+                
+                // Apply filters
+                if (classFilter) {
+                    query = query.where('className', '==', classFilter);
+                }
+                
+                if (subjectFilter) {
+                    query = query.where('subject', '==', subjectFilter);
+                }
+                
+                if (examFilter) {
+                    query = query.where('examType', '==', examFilter);
+                }
+                
+                const snapshot = await query.get();
+                const resultsTable = document.getElementById('resultsTable');
+                const tbody = resultsTable.querySelector('tbody');
+                tbody.innerHTML = '';
+                
+                if (snapshot.empty) {
+                    const row = document.createElement('tr');
+                    row.innerHTML = '<td colspan="9" style="text-align: center;">No results found</td>';
+                    tbody.appendChild(row);
+                    return;
+                }
+                
+                snapshot.forEach(doc => {
+                    const exam = doc.data();
+                    const objectiveScore = exam.objectiveScore || 0;
+                    const theoryScore = exam.theoryScore || 0;
+                    const totalScore = Math.round((objectiveScore + theoryScore) / 2);
+                    
+                    const row = document.createElement('tr');
+                    
+                    row.innerHTML = `
+                        <td>${exam.studentName}</td>
+                        <td>${exam.className}</td>
+                        <td>${exam.examType}</td>
+                        <td>${exam.subject}</td>
+                        <td>${new Date(exam.timestamp?.toDate()).toLocaleDateString()}</td>
+                        <td>${objectiveScore}%</td>
+                        <td>${theoryScore}%</td>
+                        <td>${totalScore}%</td>
+                        <td>${getGradeFromPercentage(totalScore)}</td>
+                    `;
+                    
+                    tbody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading results:', error);
+                showNotification('Error loading results', 'error');
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+        
+        // Load class assignments
+        async function loadClassAssignments() {
+            try {
+                const classesTable = document.getElementById('classesTable');
+                const tbody = classesTable.querySelector('tbody');
+                tbody.innerHTML = '';
+                
+                if (assignedClasses.length === 0) {
+                    const row = document.createElement('tr');
+                    row.innerHTML = '<td colspan="3" style="text-align: center;">No class assignments found</td>';
+                    tbody.appendChild(row);
+                    return;
+                }
+                
+                for (const className of assignedClasses) {
+                    // Count students in this class
+                    const studentsQuery = db.collection('users')
+                        .where('role', '==', 'student')
+                        .where('class', '==', className);
+                    
+                    const studentsSnapshot = await studentsQuery.get();
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${className}</td>
+                        <td>${assignedSubjects.join(', ')}</td>
+                        <td>${studentsSnapshot.size}</td>
+                    `;
+                    
+                    tbody.appendChild(row);
+                }
+            } catch (error) {
+                console.error('Error loading class assignments:', error);
+            }
+        }
+        
+        // Helper function to get grade from percentage
+        function getGradeFromPercentage(percentage) {
+            if (percentage >= 80) return 'A';
+            if (percentage >= 70) return 'B';
+            if (percentage >= 60) return 'C';
+            if (percentage >= 50) return 'D';
+            return 'F';
+        }
+        
+        // Initialize the dashboard when page loads
+        window.addEventListener('load', initDashboard);
+    </script>
+</body>
+</html>

@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DigSkills - CBT Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4cc9f0;
+            --warning: #f9c74f;
+            --danger: #f94144;
+            --gray: #6c757d;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+        
+        .logo {
+            font-size: 2.5rem;
+            margin-right: 1rem;
+            color: white;
+        }
+        
+        .header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 20px;
+            width: 100%;
+        }
+        
+        .welcome-section {
+            background: white;
+            border-radius: 12px;
+            padding: 2.5rem;
+            margin-bottom: 2.5rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            text-align: center;
+        }
+        
+        .welcome-section h2 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+        
+        .welcome-section p {
+            color: var(--gray);
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto 1.5rem;
+        }
+        
+        .login-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .login-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .login-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card-header {
+            padding: 1.5rem;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .student .card-header {
+            background: linear-gradient(to right, var(--primary), var(--success));
+        }
+        
+        .teacher .card-header {
+            background: linear-gradient(to right, var(--warning), #ff9500);
+        }
+        
+        .admin .card-header {
+            background: linear-gradient(to right, var(--danger), #ff2e63);
+        }
+        
+        .card-body {
+            padding: 2rem;
+        }
+        
+        .icon {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .student .icon {
+            color: var(--primary);
+        }
+        
+        .teacher .icon {
+            color: var(--warning);
+        }
+        
+        .admin .icon {
+            color: var(--danger);
+        }
+        
+        .features {
+            text-align: left;
+            margin: 1.5rem 0;
+            padding: 0;
+        }
+        
+        .features li {
+            list-style-type: none;
+            padding: 0.5rem 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .features li i {
+            margin-right: 0.75rem;
+            color: var(--success);
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 0.8rem 1.8rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--secondary);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+        
+        .login-form {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-top: 2rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            display: none;
+        }
+        
+        .login-form.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .login-form h3 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-size: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem 1.2rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+        
+        .notification {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: none;
+            text-align: center;
+        }
+        
+        .notification.error {
+            background-color: #ffebee;
+            color: #c62828;
+            border: 1px solid #ef9a9a;
+        }
+        
+        .notification.success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #a5d6a7;
+        }
+        
+        .footer {
+            background: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: auto;
+        }
+        
+        .footer p {
+            margin: 0.5rem 0;
+        }
+        
+        .footer a {
+            color: var(--success);
+            text-decoration: none;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 1rem;
+        }
+        
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @media (max-width: 768px) {
+            .login-options {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .welcome-section {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo-container">
+            <i class="fas fa-laptop-code logo"></i>
+            <h1>DigSkills CBT Portal</h1>
+        </div>
+        <p>Computer-Based Testing Platform for Educational Excellence</p>
+    </header>
+    
+    <div class="container">
+        <section class="welcome-section">
+            <h2>Welcome to Our CBT Platform</h2>
+            <p>DigSkills provides cutting-edge digital solutions for educational institutions. Our Computer-Based Testing platform offers a seamless experience for students, teachers, and administrators.</p>
+            <p>Select your role to continue</p>
+        </section>
+        
+        <div class="login-options">
+            <div class="login-card student">
+                <div class="card-header">
+                    Student Login
+                </div>
+                <div class="card-body">
+                    <i class="fas fa-user-graduate icon"></i>
+                    <p>Access your dashboard to take exams, practice tests, and view results.</p>
+                    
+                    <ul class="features">
+                        <li><i class="fas fa-check-circle"></i> Practice with past questions</li>
+                        <li><i class="fas fa-check-circle"></i> Take timed examinations</li>
+                        <li><i class="fas fa-check-circle"></i> View performance analytics</li>
+                        <li><i class="fas fa-check-circle"></i> Track your progress over time</li>
+                    </ul>
+                    
+                    <button class="btn btn-primary" onclick="showLoginForm('student')">Login as Student</button>
+                </div>
+            </div>
+            
+            <div class="login-card teacher">
+                <div class="card-header">
+                    Teacher Login
+                </div>
+                <div class="card-body">
+                    <i class="fas fa-chalkboard-teacher icon"></i>
+                    <p>Manage examinations, grade theory questions, and monitor student performance.</p>
+                    
+                    <ul class="features">
+                        <li><i class="fas fa-check-circle"></i> Grade theory submissions</li>
+                        <li><i class="fas fa-check-circle"></i> View student results</li>
+                        <li><i class="fas fa-check-circle"></i> Manage assigned classes</li>
+                        <li><i class="fas fa-check-circle"></i> Provide feedback to students</li>
+                    </ul>
+                    
+                    <button class="btn btn-primary" onclick="showLoginForm('teacher')">Login as Teacher</button>
+                </div>
+            </div>
+            
+            <div class="login-card admin">
+                <div class="card-header">
+                    Admin Login
+                </div>
+                <div class="card-body">
+                    <i class="fas fa-user-cog icon"></i>
+                    <p>Manage the CBT system, control examinations, and generate comprehensive reports.</p>
+                    
+                    <ul class="features">
+                        <li><i class="fas fa-check-circle"></i> Control exam settings</li>
+                        <li><i class="fas fa-check-circle"></i> Manage user accounts</li>
+                        <li><i class="fas fa-check-circle"></i> Generate performance reports</li>
+                        <li><i class="fas fa-check-circle"></i> Monitor system activity</li>
+                    </ul>
+                    
+                    <button class="btn btn-primary" onclick="showLoginForm('admin')">Login as Admin</button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="loginForm" class="login-form">
+            <h3 id="formTitle">Login to Your Account</h3>
+            
+            <div id="loginNotification" class="notification"></div>
+            
+            <form id="authForm">
+                <input type="hidden" id="userRole" value="">
+                
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" placeholder="Enter your email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Enter your password" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%">Login</button>
+            </form>
+            
+            <div id="loading" class="loading">
+                <div class="loading-spinner"></div>
+                <p>Signing in...</p>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="footer">
+        <p>&copy; 2023 DigSkills - Cutting Edge Digital Solutions</p>
+        <p>Powered by Firebase & Netlify</p>
+        <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
+    </footer>
+
+    <!-- Firebase App (core Firebase SDK) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <!-- Firebase Auth -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <!-- Firebase Firestore -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        // Firebase configuration - you'll need to replace this with your actual config
+        const firebaseConfig = {
+    apiKey: "AIzaSyDxb0pmdZU70K0ITfYbam5_xKTntAaJZGI",
+    authDomain: "digskills-cbt-portal.firebaseapp.com",
+    databaseURL: "https://digskills-cbt-portal-default-rtdb.firebaseio.com",
+    projectId: "digskills-cbt-portal",
+    storageBucket: "digskills-cbt-portal.firebasestorage.app",
+    messagingSenderId: "349802927107",
+    appId: "1:349802927107:web:3207acfc60d9d51c026a36",
+    measurementId: "G-Q3QLTFB75E"
+  };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        
+        // Current user role
+        let currentRole = '';
+        
+        // Show login form for specific role
+        function showLoginForm(role) {
+            currentRole = role;
+            const form = document.getElementById('loginForm');
+            const title = document.getElementById('formTitle');
+            const roleInput = document.getElementById('userRole');
+            
+            // Set the form title based on role
+            title.textContent = `Login as ${role.charAt(0).toUpperCase() + role.slice(1)}`;
+            roleInput.value = role;
+            
+            // Show the form
+            form.classList.add('active');
+            
+            // Scroll to form
+            form.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Show notification message
+        function showNotification(message, type) {
+            const notification = document.getElementById('loginNotification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.style.display = 'block';
+            
+            // Hide notification after 5 seconds
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 5000);
+        }
+        
+        // Show/hide loading state
+        function setLoading(isLoading) {
+            document.getElementById('loading').style.display = isLoading ? 'block' : 'none';
+        }
+        
+        // Handle form submission
+        document.getElementById('authForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            // Basic validation
+            if (!email || !password) {
+                showNotification('Please fill in all fields', 'error');
+                return;
+            }
+            
+            setLoading(true);
+            
+            try {
+                // Sign in with Firebase Auth
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+                
+                // Check if user has the correct role in Firestore
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                
+                if (userDoc.exists) {
+                    const userData = userDoc.data();
+                    
+                    if (userData.role === currentRole) {
+                        showNotification('Login successful! Redirecting...', 'success');
+                        
+                        // Redirect based on role after a short delay
+                        setTimeout(() => {
+                            switch(currentRole) {
+                                case 'student':
+                                    window.location.href = 'student-dashboard.html';
+                                    break;
+                                case 'teacher':
+                                    window.location.href = 'teacher-dashboard.html';
+                                    break;
+                                case 'admin':
+                                    window.location.href = 'admin-dashboard.html';
+                                    break;
+                            }
+                        }, 1500);
+                    } else {
+                        await auth.signOut();
+                        showNotification(`Your account does not have ${currentRole} privileges`, 'error');
+                    }
+                } else {
+                    await auth.signOut();
+                    showNotification('User account not found in database', 'error');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                
+                // Handle specific error cases
+                switch(error.code) {
+                    case 'auth/user-not-found':
+                        showNotification('No account found with this email', 'error');
+                        break;
+                    case 'auth/wrong-password':
+                        showNotification('Incorrect password', 'error');
+                        break;
+                    case 'auth/invalid-email':
+                        showNotification('Invalid email address', 'error');
+                        break;
+                    default:
+                        showNotification('Login failed: ' + error.message, 'error');
+                }
+            } finally {
+                setLoading(false);
+            }
+        });
+        
+        // Check if user is already logged in
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                try {
+                    // Check user role and redirect if already logged in
+                    const userDoc = await db.collection('users').doc(user.uid).get();
+                    
+                    if (userDoc.exists) {
+                        const userData = userDoc.data();
+                        
+                        switch(userData.role) {
+                            case 'student':
+                                window.location.href = 'student-dashboard.html';
+                                break;
+                            case 'teacher':
+                                window.location.href = 'teacher-dashboard.html';
+                                break;
+                            case 'admin':
+                                window.location.href = 'admin-dashboard.html';
+                                break;
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error checking user role:', error);
+                    // If there's an error, sign out the user
+                    auth.signOut();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

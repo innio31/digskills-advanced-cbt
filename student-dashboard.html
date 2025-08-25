@@ -1,0 +1,1480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - DigSkills CBT Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4cc9f0;
+            --warning: #f9c74f;
+            --danger: #f94144;
+            --gray: #6c757d;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background: linear-gradient(to bottom, var(--primary), var(--secondary));
+            color: white;
+            padding: 1.5rem 1rem;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+        }
+        
+        .profile {
+            text-align: center;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 1.5rem;
+        }
+        
+        .profile-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid white;
+            margin-bottom: 1rem;
+        }
+        
+        .profile h3 {
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+        
+        .profile p {
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+        
+        .nav-menu {
+            list-style: none;
+        }
+        
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+        
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1rem;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav-link i {
+            margin-right: 0.8rem;
+            font-size: 1.2rem;
+        }
+        
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 2rem;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .header h1 {
+            color: var(--primary);
+            font-size: 1.8rem;
+        }
+        
+        .logout-btn {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .logout-btn:hover {
+            background: #d32f2f;
+            transform: translateY(-2px);
+        }
+        
+        .logout-btn i {
+            margin-right: 0.5rem;
+        }
+        
+        .dashboard-section {
+            display: none;
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+        
+        .dashboard-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .section-title {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        /* Practice Mode Styles */
+        .practice-setup, .exam-setup {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        .form-group select, .form-group input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+        
+        /* Question Styles */
+        .question-container {
+            display: none;
+            margin-top: 2rem;
+        }
+        
+        .timer {
+            background: var(--warning);
+            color: var(--dark);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 1.5rem;
+        }
+        
+        .question {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 1.5rem;
+        }
+        
+        .question-number {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .question-text {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .options {
+            list-style: none;
+        }
+        
+        .option {
+            padding: 1rem;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            margin-bottom: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .option:hover {
+            background: #f8f9fa;
+            border-color: var(--primary);
+        }
+        
+        .option.selected {
+            background: rgba(67, 97, 238, 0.1);
+            border-color: var(--primary);
+        }
+        
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+        }
+        
+        /* Results Styles */
+        .results-container {
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: var(--success);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+        
+        .performance-feedback {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            text-align: left;
+        }
+        
+        .performance-feedback h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        .topic-performance {
+            margin-bottom: 1rem;
+        }
+        
+        .topic-name {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: var(--success);
+            border-radius: 4px;
+        }
+        
+        /* Settings Styles */
+        .settings-form {
+            max-width: 600px;
+        }
+        
+        .profile-picture-upload {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .profile-picture-upload img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 1.5rem;
+            border: 3px solid var(--primary);
+        }
+        
+        .upload-btn {
+            background: #e9ecef;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-btn:hover {
+            background: #dee2e6;
+        }
+        
+        /* Notification Styles */
+        .notification {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+        
+        .notification.error {
+            background-color: #ffebee;
+            color: #c62828;
+            border: 1px solid #ef9a9a;
+        }
+        
+        .notification.success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #a5d6a7;
+        }
+        
+        /* Loading Spinner */
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 2rem 0;
+        }
+        
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 200px;
+            }
+            
+            .main-content {
+                margin-left: 200px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 1rem;
+            }
+            
+            .profile {
+                display: flex;
+                align-items: center;
+                text-align: left;
+            }
+            
+            .profile-img {
+                width: 60px;
+                height: 60px;
+                margin-right: 1rem;
+                margin-bottom: 0;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 1.5rem;
+            }
+            
+            .practice-setup, .exam-setup {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="profile">
+                <img src="https://ui-avatars.com/api/?name=Student+Name&background=4361ee&color=fff" alt="Profile" class="profile-img" id="profileImage">
+                <h3 id="studentName">Student Name</h3>
+                <p id="studentClass">Class: SS2 Science</p>
+            </div>
+            
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link active" data-section="practice-mode">
+                        <i class="fas fa-brain"></i> Practice Mode
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-section="exam-mode">
+                        <i class="fas fa-clock"></i> Exam Mode
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-section="results">
+                        <i class="fas fa-chart-line"></i> Check Results
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-section="settings">
+                        <i class="fas fa-cog"></i> Settings
+                    </a>
+                </li>
+            </ul>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h1>Student Dashboard</h1>
+                <button class="logout-btn" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+            
+            <div id="notification" class="notification"></div>
+            
+            <!-- Practice Mode Section -->
+            <div class="dashboard-section active" id="practice-mode">
+                <h2 class="section-title">Practice Mode</h2>
+                <p>Enhance your knowledge with unlimited practice questions and detailed feedback.</p>
+                
+                <div class="practice-setup">
+                    <div class="form-group">
+                        <label for="examType">Exam Type</label>
+                        <select id="examType">
+                            <option value="">Select Exam Type</option>
+                            <option value="BECE">BECE</option>
+                            <option value="WAEC">WAEC</option>
+                            <option value="JAMB">JAMB</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="subject">Subject</label>
+                        <select id="subject">
+                            <option value="">Select Subject</option>
+                            <option value="Mathematics">Mathematics</option>
+                            <option value="English">English Language</option>
+                            <option value="Physics">Physics</option>
+                            <option value="Chemistry">Chemistry</option>
+                            <option value="Biology">Biology</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="questionCount">Number of Questions</label>
+                        <input type="number" id="questionCount" min="5" max="50" value="10">
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary" id="startPractice">Start Practice</button>
+                
+                <div class="question-container" id="practiceQuestions">
+                    <div class="timer" id="practiceTimer">Time: 45s</div>
+                    
+                    <div class="question">
+                        <div class="question-number">Question <span id="currentQuestion">1</span> of <span id="totalQuestions">10</span></div>
+                        <div class="question-text" id="questionText"></div>
+                        
+                        <ul class="options" id="optionsList"></ul>
+                    </div>
+                    
+                    <div class="navigation-buttons">
+                        <button class="btn" id="prevQuestion">Previous</button>
+                        <button class="btn btn-primary" id="nextQuestion">Next</button>
+                    </div>
+                    
+                    <button class="btn btn-primary" id="submitPractice" style="display: none; width: 100%; margin-top: 1rem;">Submit Answers</button>
+                </div>
+                
+                <div class="results-container" id="practiceResults" style="display: none;">
+                    <h2 class="section-title">Practice Results</h2>
+                    
+                    <div class="score-circle" id="scoreCircle">75%</div>
+                    
+                    <h3>Your Score: <span id="scoreText">15</span> out of <span id="totalScore">20</span></h3>
+                    
+                    <div class="performance-feedback">
+                        <h3>Performance Feedback</h3>
+                        <div id="topicFeedback"></div>
+                    </div>
+                    
+                    <button class="btn btn-primary" id="retryPractice" style="margin-top: 2rem;">Try Again</button>
+                </div>
+            </div>
+            
+            <!-- Exam Mode Section -->
+            <div class="dashboard-section" id="exam-mode">
+                <h2 class="section-title">Exam Mode</h2>
+                
+                <div id="availableExams">
+                    <p>No exams available at the moment. Please check back later.</p>
+                </div>
+                
+                <div class="exam-setup" id="examSetup" style="display: none;">
+                    <div class="form-group">
+                        <label for="examSubject">Subject</label>
+                        <select id="examSubject">
+                            <option value="">Select Subject</option>
+                            <option value="Mathematics">Mathematics</option>
+                            <option value="English">English Language</option>
+                            <option value="Physics">Physics</option>
+                            <option value="Chemistry">Chemistry</option>
+                            <option value="Biology">Biology</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="examDuration">Duration (minutes)</label>
+                        <input type="number" id="examDuration" readonly>
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary" id="startExam" style="display: none;">Start Exam</button>
+                
+                <div class="question-container" id="examQuestions" style="display: none;">
+                    <div class="timer" id="examTimer">Time: 60:00</div>
+                    
+                    <div class="question">
+                        <div class="question-number">Question <span id="currentExamQuestion">1</span> of <span id="totalExamQuestions">20</span></div>
+                        <div class="question-text" id="examQuestionText"></div>
+                        
+                        <ul class="options" id="examOptionsList"></ul>
+                    </div>
+                    
+                    <div class="navigation-buttons">
+                        <button class="btn" id="prevExamQuestion">Previous</button>
+                        <button class="btn btn-primary" id="nextExamQuestion">Next</button>
+                    </div>
+                    
+                    <button class="btn btn-primary" id="submitExam" style="width: 100%; margin-top: 1rem;">Submit Exam</button>
+                </div>
+            </div>
+            
+            <!-- Results Section -->
+            <div class="dashboard-section" id="results">
+                <h2 class="section-title">Exam Results</h2>
+                
+                <div class="form-group">
+                    <label for="resultFilter">Filter Results</label>
+                    <select id="resultFilter">
+                        <option value="all">All Results</option>
+                        <option value="BECE">BECE</option>
+                        <option value="WAEC">WAEC</option>
+                        <option value="JAMB">JAMB</option>
+                    </select>
+                </div>
+                
+                <div id="resultsList">
+                    <p>No results available yet.</p>
+                </div>
+            </div>
+            
+            <!-- Settings Section -->
+            <div class="dashboard-section" id="settings">
+                <h2 class="section-title">Settings</h2>
+                
+                <div class="settings-form">
+                    <div class="profile-picture-upload">
+                        <img src="https://ui-avatars.com/api/?name=Student+Name&background=4361ee&color=fff" alt="Profile" id="settingsProfileImage">
+                        <div>
+                            <div class="upload-btn" id="uploadTrigger">
+                                <i class="fas fa-upload"></i> Upload Photo
+                            </div>
+                            <input type="file" id="profileUpload" accept="image/*" style="display: none;">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="studentNameInput">Full Name</label>
+                        <input type="text" id="studentNameInput" readonly>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="studentClassInput">Class</label>
+                        <input type="text" id="studentClassInput" readonly>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="studentEmail">Email Address</label>
+                        <input type="email" id="studentEmail" readonly>
+                    </div>
+                    
+                    <button class="btn btn-primary" id="changePasswordBtn">Request Password Change</button>
+                </div>
+            </div>
+            
+            <div class="loading" id="loading">
+                <div class="loading-spinner"></div>
+                <p>Processing...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+
+    <script>
+        // Firebase configuration - replace with your actual config
+        const firebaseConfig = {
+    apiKey: "AIzaSyDxb0pmdZU70K0ITfYbam5_xKTntAaJZGI",
+    authDomain: "digskills-cbt-portal.firebaseapp.com",
+    databaseURL: "https://digskills-cbt-portal-default-rtdb.firebaseio.com",
+    projectId: "digskills-cbt-portal",
+    storageBucket: "digskills-cbt-portal.firebasestorage.app",
+    messagingSenderId: "349802927107",
+    appId: "1:349802927107:web:3207acfc60d9d51c026a36",
+    measurementId: "G-Q3QLTFB75E"
+  };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const storage = firebase.storage();
+        
+        // DOM Elements
+        const navLinks = document.querySelectorAll('.nav-link');
+        const sections = document.querySelectorAll('.dashboard-section');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const notification = document.getElementById('notification');
+        const loading = document.getElementById('loading');
+        
+        // Practice Mode Elements
+        const startPracticeBtn = document.getElementById('startPractice');
+        const practiceQuestions = document.getElementById('practiceQuestions');
+        const practiceResults = document.getElementById('practiceResults');
+        const submitPracticeBtn = document.getElementById('submitPractice');
+        const retryPracticeBtn = document.getElementById('retryPractice');
+        
+        // Exam Mode Elements
+        const startExamBtn = document.getElementById('startExam');
+        const examQuestions = document.getElementById('examQuestions');
+        const submitExamBtn = document.getElementById('submitExam');
+        
+        // User Data
+        let currentUser = null;
+        let userData = null;
+        
+        // Practice Data
+        let practiceQuestionsData = [];
+        let currentPracticeQuestion = 0;
+        let practiceAnswers = [];
+        let practiceTimer = null;
+        
+        // Exam Data
+        let examQuestionsData = [];
+        let currentExamQuestion = 0;
+        let examAnswers = [];
+        let examTimer = null;
+        let examDuration = 0;
+        let examTimeLeft = 0;
+        
+        // Question Bank (In a real app, this would come from Firebase)
+        const questionBank = {
+            Mathematics: [
+                {
+                    question: "What is the value of π (pi) to two decimal places?",
+                    options: ["3.14", "3.16", "3.12", "3.18"],
+                    answer: 0,
+                    topic: "Geometry"
+                },
+                {
+                    question: "Solve for x: 2x + 5 = 15",
+                    options: ["x = 5", "x = 10", "x = 7.5", "x = 5.5"],
+                    answer: 0,
+                    topic: "Algebra"
+                },
+                {
+                    question: "What is the square root of 144?",
+                    options: ["12", "14", "16", "18"],
+                    answer: 0,
+                    topic: "Arithmetic"
+                },
+                {
+                    question: "If a triangle has angles of 45°, 45°, and 90°, what type of triangle is it?",
+                    options: ["Isosceles right triangle", "Equilateral triangle", "Scalene triangle", "Obtuse triangle"],
+                    answer: 0,
+                    topic: "Geometry"
+                },
+                {
+                    question: "What is the formula for the area of a circle?",
+                    options: ["πr²", "2πr", "πd", "2πr²"],
+                    answer: 0,
+                    topic: "Geometry"
+                }
+            ],
+            English: [
+                {
+                    question: "Which of the following is a synonym for 'happy'?",
+                    options: ["Joyful", "Sad", "Angry", "Tired"],
+                    answer: 0,
+                    topic: "Vocabulary"
+                },
+                {
+                    question: "Identify the noun in the sentence: 'The quick brown fox jumps over the lazy dog.'",
+                    options: ["quick", "jumps", "fox", "over"],
+                    answer: 2,
+                    topic: "Grammar"
+                },
+                {
+                    question: "What is the past tense of 'go'?",
+                    options: ["went", "goed", "gone", "going"],
+                    answer: 0,
+                    topic: "Grammar"
+                },
+                {
+                    question: "Which word is spelled correctly?",
+                    options: ["Recieve", "Receive", "Receeve", "Resieve"],
+                    answer: 1,
+                    topic: "Spelling"
+                },
+                {
+                    question: "What is the literary device used in 'The stars danced playfully in the moonlit sky'?",
+                    options: ["Simile", "Metaphor", "Personification", "Hyperbole"],
+                    answer: 2,
+                    topic: "Literature"
+                }
+            ],
+            Physics: [
+                {
+                    question: "What is the SI unit of force?",
+                    options: ["Newton", "Joule", "Watt", "Pascal"],
+                    answer: 0,
+                    topic: "Mechanics"
+                },
+                {
+                    question: "Which law states that 'for every action, there is an equal and opposite reaction'?",
+                    options: ["Newton's First Law", "Newton's Second Law", "Newton's Third Law", "Law of Gravitation"],
+                    answer: 2,
+                    topic: "Mechanics"
+                },
+                {
+                    question: "What is the speed of light in a vacuum?",
+                    options: ["299,792,458 m/s", "150,000,000 m/s", "450,000,000 m/s", "100,000,000 m/s"],
+                    answer: 0,
+                    topic: "Optics"
+                },
+                {
+                    question: "Which subatomic particle has a positive charge?",
+                    options: ["Proton", "Neutron", "Electron", "Photon"],
+                    answer: 0,
+                    topic: "Atomic Physics"
+                },
+                {
+                    question: "What is the formula for calculating work?",
+                    options: ["Force × Distance", "Mass × Acceleration", "Force × Acceleration", "Mass × Velocity"],
+                    answer: 0,
+                    topic: "Energy"
+                }
+            ]
+        };
+        
+        // Initialize the dashboard
+        function initDashboard() {
+            // Check if user is logged in
+            auth.onAuthStateChanged(async (user) => {
+                if (user) {
+                    currentUser = user;
+                    await loadUserData();
+                    setupEventListeners();
+                    updateUI();
+                } else {
+                    // Redirect to login if not authenticated
+                    window.location.href = 'index.html';
+                }
+            });
+        }
+        
+        // Load user data from Firestore
+        async function loadUserData() {
+            try {
+                loading.style.display = 'block';
+                const userDoc = await db.collection('users').doc(currentUser.uid).get();
+                
+                if (userDoc.exists) {
+                    userData = userDoc.data();
+                } else {
+                    showNotification('User data not found', 'error');
+                }
+            } catch (error) {
+                console.error('Error loading user data:', error);
+                showNotification('Error loading user data', 'error');
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+        
+        // Set up event listeners
+        function setupEventListeners() {
+            // Navigation
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const sectionId = link.getAttribute('data-section');
+                    
+                    // Update active nav link
+                    navLinks.forEach(nav => nav.classList.remove('active'));
+                    link.classList.add('active');
+                    
+                    // Show selected section
+                    sections.forEach(section => section.classList.remove('active'));
+                    document.getElementById(sectionId).classList.add('active');
+                });
+            });
+            
+            // Logout
+            logoutBtn.addEventListener('click', () => {
+                auth.signOut().then(() => {
+                    window.location.href = 'index.html';
+                });
+            });
+            
+            // Practice Mode
+            startPracticeBtn.addEventListener('click', startPractice);
+            submitPracticeBtn.addEventListener('click', submitPractice);
+            retryPracticeBtn.addEventListener('click', resetPractice);
+            
+            // Exam Mode
+            startExamBtn.addEventListener('click', startExam);
+            submitExamBtn.addEventListener('click', submitExam);
+            
+            // Settings
+            document.getElementById('uploadTrigger').addEventListener('click', () => {
+                document.getElementById('profileUpload').click();
+            });
+            
+            document.getElementById('profileUpload').addEventListener('change', uploadProfileImage);
+            document.getElementById('changePasswordBtn').addEventListener('click', requestPasswordChange);
+        }
+        
+        // Update UI with user data
+        function updateUI() {
+            if (userData) {
+                // Update profile
+                document.getElementById('studentName').textContent = userData.name || 'Student Name';
+                document.getElementById('studentClass').textContent = `Class: ${userData.class || 'Not specified'}`;
+                
+                document.getElementById('studentNameInput').value = userData.name || '';
+                document.getElementById('studentClassInput').value = userData.class || '';
+                document.getElementById('studentEmail').value = currentUser.email;
+                
+                // Load profile image if exists
+                if (userData.profileImage) {
+                    document.getElementById('profileImage').src = userData.profileImage;
+                    document.getElementById('settingsProfileImage').src = userData.profileImage;
+                }
+            }
+            
+            // Check for available exams
+            checkAvailableExams();
+            
+            // Load results
+            loadResults();
+        }
+        
+        // Show notification
+        function showNotification(message, type) {
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.style.display = 'block';
+            
+            // Hide after 5 seconds
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 5000);
+        }
+        
+        // Start practice session
+        function startPractice() {
+            const examType = document.getElementById('examType').value;
+            const subject = document.getElementById('subject').value;
+            const questionCount = parseInt(document.getElementById('questionCount').value);
+            
+            if (!examType || !subject || !questionCount) {
+                showNotification('Please select exam type, subject, and number of questions', 'error');
+                return;
+            }
+            
+            // Generate practice questions (in real app, these would come from Firebase)
+            practiceQuestionsData = generatePracticeQuestions(subject, questionCount);
+            currentPracticeQuestion = 0;
+            practiceAnswers = new Array(practiceQuestionsData.length).fill(null);
+            
+            // Show questions container
+            practiceQuestions.style.display = 'block';
+            document.getElementById('totalQuestions').textContent = practiceQuestionsData.length;
+            
+            // Load first question
+            loadPracticeQuestion(0);
+            
+            // Start timer for first question
+            startQuestionTimer();
+        }
+        
+        // Generate practice questions
+        function generatePracticeQuestions(subject, count) {
+            const subjectQuestions = questionBank[subject] || [];
+            const questions = [];
+            
+            // If we don't have enough questions, duplicate some
+            for (let i = 0; i < count; i++) {
+                const questionIndex = i % subjectQuestions.length;
+                questions.push({...subjectQuestions[questionIndex]});
+            }
+            
+            // Shuffle questions
+            return questions.sort(() => Math.random() - 0.5);
+        }
+        
+        // Load practice question
+        function loadPracticeQuestion(index) {
+            if (index < 0 || index >= practiceQuestionsData.length) return;
+            
+            currentPracticeQuestion = index;
+            const question = practiceQuestionsData[index];
+            
+            // Update question number
+            document.getElementById('currentQuestion').textContent = index + 1;
+            
+            // Set question text
+            document.getElementById('questionText').textContent = question.question;
+            
+            // Clear options
+            const optionsList = document.getElementById('optionsList');
+            optionsList.innerHTML = '';
+            
+            // Add options
+            question.options.forEach((option, i) => {
+                const li = document.createElement('li');
+                li.className = 'option';
+                if (practiceAnswers[index] === i) {
+                    li.classList.add('selected');
+                }
+                li.textContent = option;
+                li.addEventListener('click', () => selectOption(i));
+                optionsList.appendChild(li);
+            });
+            
+            // Update navigation buttons
+            document.getElementById('prevQuestion').style.display = index > 0 ? 'block' : 'none';
+            document.getElementById('nextQuestion').style.display = index < practiceQuestionsData.length - 1 ? 'block' : 'none';
+            document.getElementById('submitPractice').style.display = index === practiceQuestionsData.length - 1 ? 'block' : 'none';
+            
+            // Reset and start timer
+            resetTimer();
+            startQuestionTimer();
+        }
+        
+        // Select option for current question
+        function selectOption(optionIndex) {
+            // Remove selected class from all options
+            const options = document.querySelectorAll('.option');
+            options.forEach(option => option.classList.remove('selected'));
+            
+            // Add selected class to clicked option
+            options[optionIndex].classList.add('selected');
+            
+            // Save answer
+            practiceAnswers[currentPracticeQuestion] = optionIndex;
+        }
+        
+        // Start question timer
+        function startQuestionTimer() {
+            let timeLeft = 45; // 45 seconds per question
+            
+            // Update timer display
+            const timerElement = document.getElementById('practiceTimer');
+            timerElement.textContent = `Time: ${timeLeft}s`;
+            
+            // Start countdown
+            practiceTimer = setInterval(() => {
+                timeLeft--;
+                timerElement.textContent = `Time: ${timeLeft}s`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(practiceTimer);
+                    // Auto move to next question if time runs out
+                    if (currentPracticeQuestion < practiceQuestionsData.length - 1) {
+                        loadPracticeQuestion(currentPracticeQuestion + 1);
+                    } else {
+                        // If last question, enable submit button
+                        document.getElementById('submitPractice').style.display = 'block';
+                    }
+                }
+            }, 1000);
+        }
+        
+        // Reset timer
+        function resetTimer() {
+            if (practiceTimer) {
+                clearInterval(practiceTimer);
+            }
+        }
+        
+        // Submit practice answers
+        function submitPractice() {
+            resetTimer();
+            
+            // Calculate score
+            let score = 0;
+            const topicPerformance = {};
+            
+            practiceQuestionsData.forEach((question, index) => {
+                if (question.answer === practiceAnswers[index]) {
+                    score++;
+                }
+                
+                // Track performance by topic
+                if (!topicPerformance[question.topic]) {
+                    topicPerformance[question.topic] = { correct: 0, total: 0 };
+                }
+                
+                topicPerformance[question.topic].total++;
+                if (question.answer === practiceAnswers[index]) {
+                    topicPerformance[question.topic].correct++;
+                }
+            });
+            
+            const percentage = Math.round((score / practiceQuestionsData.length) * 100);
+            
+            // Display results
+            practiceQuestions.style.display = 'none';
+            practiceResults.style.display = 'block';
+            
+            document.getElementById('scoreCircle').textContent = `${percentage}%`;
+            document.getElementById('scoreText').textContent = score;
+            document.getElementById('totalScore').textContent = practiceQuestionsData.length;
+            
+            // Display topic feedback
+            const topicFeedback = document.getElementById('topicFeedback');
+            topicFeedback.innerHTML = '';
+            
+            for (const topic in topicPerformance) {
+                const performance = topicPerformance[topic];
+                const percentage = Math.round((performance.correct / performance.total) * 100);
+                
+                const topicDiv = document.createElement('div');
+                topicDiv.className = 'topic-performance';
+                
+                topicDiv.innerHTML = `
+                    <div class="topic-name">${topic} - ${percentage}%</div>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: ${percentage}%"></div>
+                    </div>
+                    <div>${performance.correct} out of ${performance.total} correct</div>
+                `;
+                
+                topicFeedback.appendChild(topicDiv);
+            }
+            
+            // Save practice results to Firebase
+            savePracticeResults(percentage, topicPerformance);
+        }
+        
+        // Reset practice
+        function resetPractice() {
+            practiceResults.style.display = 'none';
+            document.getElementById('examType').value = '';
+            document.getElementById('subject').value = '';
+            document.getElementById('questionCount').value = '10';
+        }
+        
+        // Save practice results to Firebase
+        async function savePracticeResults(score, topicPerformance) {
+            try {
+                const resultData = {
+                    studentId: currentUser.uid,
+                    studentName: userData.name,
+                    className: userData.class,
+                    examType: document.getElementById('examType').value,
+                    subject: document.getElementById('subject').value,
+                    score: score,
+                    topicPerformance: topicPerformance,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                
+                await db.collection('practiceResults').add(resultData);
+            } catch (error) {
+                console.error('Error saving practice results:', error);
+            }
+        }
+        
+        // Check for available exams
+        async function checkAvailableExams() {
+            try {
+                const examsSnapshot = await db.collection('exams')
+                    .where('status', '==', 'active')
+                    .where('class', '==', userData.class)
+                    .get();
+                
+                const availableExams = document.getElementById('availableExams');
+                
+                if (examsSnapshot.empty) {
+                    availableExams.innerHTML = '<p>No exams available at the moment. Please check back later.</p>';
+                    return;
+                }
+                
+                availableExams.innerHTML = '<h3>Available Exams</h3>';
+                
+                examsSnapshot.forEach(doc => {
+                    const exam = doc.data();
+                    const examDiv = document.createElement('div');
+                    examDiv.className = 'exam-item';
+                    examDiv.innerHTML = `
+                        <h4>${exam.title} (${exam.subject})</h4>
+                        <p>Duration: ${exam.duration} minutes</p>
+                        <p>Type: ${exam.examType}</p>
+                        <button class="btn btn-primary" data-exam-id="${doc.id}">Start Exam</button>
+                    `;
+                    
+                    availableExams.appendChild(examDiv);
+                    
+                    // Add event listener to start button
+                    examDiv.querySelector('button').addEventListener('click', () => {
+                        setupExam(doc.id, exam);
+                    });
+                });
+            } catch (error) {
+                console.error('Error checking available exams:', error);
+            }
+        }
+        
+        // Setup exam
+        function setupExam(examId, exam) {
+            document.getElementById('examSubject').value = exam.subject;
+            document.getElementById('examDuration').value = exam.duration;
+            
+            document.getElementById('availableExams').style.display = 'none';
+            document.getElementById('examSetup').style.display = 'grid';
+            document.getElementById('startExam').style.display = 'block';
+            
+            // Store exam data
+            examQuestionsData = exam.questions || [];
+            examDuration = exam.duration * 60; // Convert to seconds
+            examTimeLeft = examDuration;
+            
+            // Add event listener to start exam button
+            startExamBtn.onclick = () => startExam(examId);
+        }
+        
+        // Start exam
+        function startExam(examId) {
+            document.getElementById('examSetup').style.display = 'none';
+            document.getElementById('startExam').style.display = 'none';
+            examQuestions.style.display = 'block';
+            
+            currentExamQuestion = 0;
+            examAnswers = new Array(examQuestionsData.length).fill(null);
+            
+            document.getElementById('totalExamQuestions').textContent = examQuestionsData.length;
+            
+            // Load first question
+            loadExamQuestion(0);
+            
+            // Start exam timer
+            startExamTimer();
+        }
+        
+        // Load exam question
+        function loadExamQuestion(index) {
+            if (index < 0 || index >= examQuestionsData.length) return;
+            
+            currentExamQuestion = index;
+            const question = examQuestionsData[index];
+            
+            // Update question number
+            document.getElementById('currentExamQuestion').textContent = index + 1;
+            
+            // Set question text
+            document.getElementById('examQuestionText').textContent = question.question;
+            
+            // Clear options
+            const optionsList = document.getElementById('examOptionsList');
+            optionsList.innerHTML = '';
+            
+            // Add options
+            question.options.forEach((option, i) => {
+                const li = document.createElement('li');
+                li.className = 'option';
+                if (examAnswers[index] === i) {
+                    li.classList.add('selected');
+                }
+                li.textContent = option;
+                li.addEventListener('click', () => selectExamOption(i));
+                optionsList.appendChild(li);
+            });
+            
+            // Update navigation buttons
+            document.getElementById('prevExamQuestion').style.display = index > 0 ? 'block' : 'none';
+            document.getElementById('nextExamQuestion').style.display = index < examQuestionsData.length - 1 ? 'block' : 'none';
+        }
+        
+        // Select option for exam question
+        function selectExamOption(optionIndex) {
+            // Remove selected class from all options
+            const options = document.querySelectorAll('#examOptionsList .option');
+            options.forEach(option => option.classList.remove('selected'));
+            
+            // Add selected class to clicked option
+            options[optionIndex].classList.add('selected');
+            
+            // Save answer
+            examAnswers[currentExamQuestion] = optionIndex;
+        }
+        
+        // Start exam timer
+        function startExamTimer() {
+            // Update timer display
+            const timerElement = document.getElementById('examTimer');
+            updateExamTimerDisplay();
+            
+            // Start countdown
+            examTimer = setInterval(() => {
+                examTimeLeft--;
+                updateExamTimerDisplay();
+                
+                if (examTimeLeft <= 0) {
+                    clearInterval(examTimer);
+                    // Auto submit exam when time runs out
+                    submitExam();
+                }
+            }, 1000);
+        }
+        
+        // Update exam timer display
+        function updateExamTimerDisplay() {
+            const minutes = Math.floor(examTimeLeft / 60);
+            const seconds = examTimeLeft % 60;
+            document.getElementById('examTimer').textContent = `Time: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        }
+        
+        // Submit exam
+        async function submitExam() {
+            if (examTimer) {
+                clearInterval(examTimer);
+            }
+            
+            // Calculate score
+            let score = 0;
+            examQuestionsData.forEach((question, index) => {
+                if (question.answer === examAnswers[index]) {
+                    score++;
+                }
+            });
+            
+            const percentage = Math.round((score / examQuestionsData.length) * 100);
+            
+            // Save exam results to Firebase
+            try {
+                const resultData = {
+                    studentId: currentUser.uid,
+                    studentName: userData.name,
+                    className: userData.class,
+                    examId: document.getElementById('examType').value,
+                    subject: document.getElementById('subject').value,
+                    score: percentage,
+                    answers: examAnswers,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                
+                await db.collection('examResults').add(resultData);
+                showNotification('Exam submitted successfully!', 'success');
+                
+                // Reset exam UI
+                examQuestions.style.display = 'none';
+                document.getElementById('availableExams').style.display = 'block';
+                
+                // Reload available exams
+                checkAvailableExams();
+            } catch (error) {
+                console.error('Error submitting exam:', error);
+                showNotification('Error submitting exam', 'error');
+            }
+        }
+        
+        // Load results
+        async function loadResults() {
+            try {
+                const resultsSnapshot = await db.collection('examResults')
+                    .where('studentId', '==', currentUser.uid)
+                    .orderBy('timestamp', 'desc')
+                    .get();
+                
+                const resultsList = document.getElementById('resultsList');
+                
+                if (resultsSnapshot.empty) {
+                    resultsList.innerHTML = '<p>No results available yet.</p>';
+                    return;
+                }
+                
+                resultsList.innerHTML = '';
+                
+                resultsSnapshot.forEach(doc => {
+                    const result = doc.data();
+                    const resultDiv = document.createElement('div');
+                    resultDiv.className = 'result-item';
+                    resultDiv.innerHTML = `
+                        <h4>${result.subject} - ${result.score}%</h4>
+                        <p>Date: ${new Date(result.timestamp?.toDate()).toLocaleDateString()}</p>
+                        <p>Class: ${result.className}</p>
+                    `;
+                    
+                    resultsList.appendChild(resultDiv);
+                });
+            } catch (error) {
+                console.error('Error loading results:', error);
+            }
+        }
+        
+        // Upload profile image
+        async function uploadProfileImage(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            try {
+                loading.style.display = 'block';
+                
+                // Upload to Firebase Storage
+                const storageRef = storage.ref();
+                const imageRef = storageRef.child(`profile-images/${currentUser.uid}`);
+                const snapshot = await imageRef.put(file);
+                const downloadURL = await snapshot.ref.getDownloadURL();
+                
+                // Update user profile in Firestore
+                await db.collection('users').doc(currentUser.uid).update({
+                    profileImage: downloadURL
+                });
+                
+                // Update UI
+                document.getElementById('profileImage').src = downloadURL;
+                document.getElementById('settingsProfileImage').src = downloadURL;
+                
+                showNotification('Profile image updated successfully!', 'success');
+            } catch (error) {
+                console.error('Error uploading profile image:', error);
+                showNotification('Error uploading profile image', 'error');
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+        
+        // Request password change
+        function requestPasswordChange() {
+            auth.sendPasswordResetEmail(currentUser.email)
+                .then(() => {
+                    showNotification('Password reset email sent! Check your inbox.', 'success');
+                })
+                .catch(error => {
+                    console.error('Error sending password reset email:', error);
+                    showNotification('Error sending password reset email', 'error');
+                });
+        }
+        
+        // Navigation event listeners
+        document.getElementById('prevQuestion').addEventListener('click', () => {
+            if (currentPracticeQuestion > 0) {
+                loadPracticeQuestion(currentPracticeQuestion - 1);
+            }
+        });
+        
+        document.getElementById('nextQuestion').addEventListener('click', () => {
+            if (currentPracticeQuestion < practiceQuestionsData.length - 1) {
+                loadPracticeQuestion(currentPracticeQuestion + 1);
+            }
+        });
+        
+        document.getElementById('prevExamQuestion').addEventListener('click', () => {
+            if (currentExamQuestion > 0) {
+                loadExamQuestion(currentExamQuestion - 1);
+            }
+        });
+        
+        document.getElementById('nextExamQuestion').addEventListener('click', () => {
+            if (currentExamQuestion < examQuestionsData.length - 1) {
+                loadExamQuestion(currentExamQuestion + 1);
+            }
+        });
+        
+        // Initialize the dashboard when page loads
+        window.addEventListener('load', initDashboard);
+    </script>
+</body>
+</html>
